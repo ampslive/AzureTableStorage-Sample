@@ -12,8 +12,11 @@ namespace SampleTableStorage
             blog.Name = "New Beginning " + DateTimeOffset.Now;
             //blog.DateCreated = DateTime.Now;
 
-            ATSRepository<Blog> obj = new Blog();
-            obj.Add(blog);
+            //ATSRepository<Blog> obj = new Blog();
+            //obj.Add(blog);
+            //obj.Get("");
+
+            ATSRepository<Services> obj = new Services();
             obj.Get("");
         }
     }

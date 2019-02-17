@@ -60,4 +60,20 @@ namespace SampleTableStorage
             this.RowKey = name;
         }
     }
+
+    public class Services : ATSRepository<Services>
+    {
+        public ServiceDetail ServiceDetail { get; set; }
+        public TeamDetail TeamDetails { get; set; }
+    }
+
+    public class TeamDetail : TableEntity
+    {
+    }
+
+    public class ServiceDetail : TableEntity
+    {
+        public string ServiceName { get; set; }
+        public string ServiceNotes { get; set; }
+    }
 }

@@ -18,6 +18,7 @@ namespace SampleTableStorage
         {
             _tableClient = ProgramNew.storageAccount.CreateCloudTableClient();
         }
+
         public virtual void Add(T obj)
         {
             //Table Exists?
@@ -49,10 +50,10 @@ namespace SampleTableStorage
                     break;
                 }
             }
-            if(lst.C .e(typeof(PartitionKey)))
-            {
+            //if(lst.C .e(typeof(PartitionKey)))
+            //{
 
-            }
+            //}
 
             obj.GetType().GetProperty("RowKey").SetValue(obj, rowkey, null);
         }
@@ -60,13 +61,13 @@ namespace SampleTableStorage
         public virtual void Get(string id)
         {
             CloudTableClient tableClient = ProgramNew.storageAccount.CreateCloudTableClient();
-            CloudTable table = tableClient.GetTableReference(nameof(Blog));
+            CloudTable table = tableClient.GetTableReference(nameof(Services));
             // Create a retrieve operation that takes a customer entity.
-            //TableOperation retrieveOperation = TableOperation.Retrieve<Blog>("Comment", "Com2");
-
+            TableOperation retrieveOperation = TableOperation.Retrieve<ServiceDetail>("NLAG-CT-20190210", "SERVICEDETAILS");
+            TableOperation retrieveTeamOperation = TableOperation.Retrieve<TeamDetail>("NLAG-CT-20190210", "TEAMDETAILS");
             // Execute the retrieve operation.
             //TableResult retrievedResult = 
-            //var t = table.ExecuteAsync(retrieveOperation).Result;
+            var serviceDetails = table.ExecuteAsync(retrieveOperation).Result;
 
         }
 
