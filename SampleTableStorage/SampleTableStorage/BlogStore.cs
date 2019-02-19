@@ -25,7 +25,7 @@ namespace SampleTableStorage
             //this.RowKey = name;
         }
 
-        
+
     }
 
     public class RowKey : Attribute
@@ -63,8 +63,40 @@ namespace SampleTableStorage
 
     public class Services : ATSRepository<Services>
     {
-        public ServiceDetail ServiceDetail { get; set; }
+        public ServiceDetail SERVICEDETAILS { get; set; }
         public TeamDetail TeamDetails { get; set; }
+
+        public override void Get(string id)
+        {
+            CloudTableClient tableClient = ProgramNew.storageAccount.CreateCloudTableClient();
+            CloudTable table = tableClient.GetTableReference(nameof(Services));
+            // Create a retrieve operation that takes a customer entity.
+            TableOperation retrieveServiceOperation = TableOperation.Retrieve<ServiceDetail>("NLAG-CT-20190224", "SERVICEDETAILS");
+            TableOperation retrieveRehearsalOperation = TableOperation.Retrieve<RehearsalDetail>("NLAG-CT-20190224", "REHEARSALDETAILS");
+            // Execute the retrieve operation.
+            //TableResult retrievedResult = 
+            var serviceDetails = table.ExecuteAsync(retrieveServiceOperation).Result;
+            var rehearsalDetails = table.ExecuteAsync(retrieveRehearsalOperation).Result;
+
+            TableQuery<Services> rangeQuery = new TableQuery<Services>().Where(
+            TableQuery.CombineFilters(
+            TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "NLAG-CT-20190224"),
+            TableOperators.And,
+            TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.GreaterThan, "")));
+
+            var worshipLeaders = table.ExecuteQuerySegmentedAsync(rangeQuery,null).Result;
+            foreach (var item in worshipLeaders.Results)
+            {
+                if (item.RowKey == "REHEARSALDETAILS")
+                {
+                }
+            };
+        }
+    }
+
+    public class WorshipLeader : TableEntity
+    {
+        public string Name { get; set; }
     }
 
     public class TeamDetail : TableEntity
@@ -75,5 +107,11 @@ namespace SampleTableStorage
     {
         public string ServiceName { get; set; }
         public string ServiceNotes { get; set; }
+    }
+
+    public class RehearsalDetail : TableEntity
+    {
+        public string Date { get; set; }
+        public string Location { get; set; }
     }
 }

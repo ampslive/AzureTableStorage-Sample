@@ -63,12 +63,12 @@ namespace SampleTableStorage
             CloudTableClient tableClient = ProgramNew.storageAccount.CreateCloudTableClient();
             CloudTable table = tableClient.GetTableReference(nameof(Services));
             // Create a retrieve operation that takes a customer entity.
-            TableOperation retrieveOperation = TableOperation.Retrieve<ServiceDetail>("NLAG-CT-20190210", "SERVICEDETAILS");
-            TableOperation retrieveTeamOperation = TableOperation.Retrieve<TeamDetail>("NLAG-CT-20190210", "TEAMDETAILS");
+            TableOperation retrieveServiceOperation = TableOperation.Retrieve<ServiceDetail>("NLAG-CT-20190224", "SERVICEDETAILS");
+            TableOperation retrieveRehearsalOperation = TableOperation.Retrieve<RehearsalDetail>("NLAG-CT-20190224", "REHEARSALDETAILS");
             // Execute the retrieve operation.
             //TableResult retrievedResult = 
-            var serviceDetails = table.ExecuteAsync(retrieveOperation).Result;
-
+            var serviceDetails = table.ExecuteAsync(retrieveServiceOperation).Result;
+            var rehearsalDetails = table.ExecuteAsync(retrieveRehearsalOperation).Result;
         }
 
         public virtual List<T> GetAll()
