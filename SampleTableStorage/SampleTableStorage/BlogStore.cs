@@ -69,15 +69,16 @@ namespace SampleTableStorage
         public override void Get(string id)
         {
             CloudTableClient tableClient = ProgramNew.storageAccount.CreateCloudTableClient();
-            CloudTable table = tableClient.GetTableReference(nameof(Services));
-            // Create a retrieve operation that takes a customer entity.
+            CloudTable table = tableClient.GetTableReference(this.GetType().Name);
+            
+            // Create a retrieve operation
             TableOperation retrieveServiceOperation = TableOperation.Retrieve<ServiceDetail>("NLAG-CT-20190224", "SERVICEDETAILS");
-            TableOperation retrieveRehearsalOperation = TableOperation.Retrieve<RehearsalDetail>("NLAG-CT-20190224", "REHEARSALDETAILS");
-            // Execute the retrieve operation.
-            //TableResult retrievedResult = 
             var serviceDetails = table.ExecuteAsync(retrieveServiceOperation).Result;
+
+            TableOperation retrieveRehearsalOperation = TableOperation.Retrieve<RehearsalDetail>("NLAG-CT-20190224", "REHEARSALDETAILS");
             var rehearsalDetails = table.ExecuteAsync(retrieveRehearsalOperation).Result;
 
+            //Query for Range
             TableQuery rangeQuery = new TableQuery().Where(
             TableQuery.CombineFilters(
             TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "NLAG-CT-20190224"),
