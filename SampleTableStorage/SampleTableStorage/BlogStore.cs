@@ -71,14 +71,14 @@ namespace SampleTableStorage
             CloudTableClient tableClient = ProgramNew.storageAccount.CreateCloudTableClient();
             CloudTable table = tableClient.GetTableReference(this.GetType().Name);
             
-            // Create a retrieve operation
+            // Point Query
             TableOperation retrieveServiceOperation = TableOperation.Retrieve<ServiceDetail>("NLAG-CT-20190224", "SERVICEDETAILS");
             var serviceDetails = table.ExecuteAsync(retrieveServiceOperation).Result;
 
             TableOperation retrieveRehearsalOperation = TableOperation.Retrieve<RehearsalDetail>("NLAG-CT-20190224", "REHEARSALDETAILS");
             var rehearsalDetails = table.ExecuteAsync(retrieveRehearsalOperation).Result;
 
-            //Query for Range
+            //Range Query on Row Key
             TableQuery rangeQuery = new TableQuery().Where(
             TableQuery.CombineFilters(
             TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "NLAG-CT-20190224"),
@@ -100,8 +100,17 @@ namespace SampleTableStorage
             //Range Query on Partition Key
             var rangeQueryPKey = new TableQuery().Where(
                 TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.GreaterThan, "NLAG-CT-20190210"));
+
             var pkeys = table.ExecuteQuerySegmentedAsync(rangeQueryPKey, null).Result;
 
+            //Partition Scan
+            TableQuery queryPScan = new TableQuery().Where(
+            TableQuery.CombineFilters(
+            TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "NLAG-CT-20190217"),
+            TableOperators.And,
+            TableQuery.GenerateFilterCondition("AG1", QueryComparisons.Equal, "Manjrekar")));
+
+            var ag1Manjrekar = table.ExecuteQuerySegmentedAsync(queryPScan, null).Result;
         }
 
     }
