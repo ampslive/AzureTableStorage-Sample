@@ -78,21 +78,28 @@ namespace SampleTableStorage
             var serviceDetails = table.ExecuteAsync(retrieveServiceOperation).Result;
             var rehearsalDetails = table.ExecuteAsync(retrieveRehearsalOperation).Result;
 
-            TableQuery<Services> rangeQuery = new TableQuery<Services>().Where(
+            TableQuery rangeQuery = new TableQuery().Where(
             TableQuery.CombineFilters(
             TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "NLAG-CT-20190224"),
             TableOperators.And,
             TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.GreaterThan, "")));
 
-            var worshipLeaders = table.ExecuteQuerySegmentedAsync(rangeQuery,null).Result;
+            var worshipLeaders = table.ExecuteQuerySegmentedAsync(rangeQuery, null).Result;
             foreach (var item in worshipLeaders.Results)
             {
                 if (item.RowKey == "REHEARSALDETAILS")
                 {
+                    var props = item.Properties;
+
+                    RehearsalDetail rehearsal = EntityPropertyConverter.ConvertBack<RehearsalDetail>(item.Properties, null);
+                    
                 }
             };
         }
+
     }
+
+
 
     public class WorshipLeader : TableEntity
     {
