@@ -96,6 +96,12 @@ namespace SampleTableStorage
                     
                 }
             };
+
+            //Range Query on Partition Key
+            var rangeQueryPKey = new TableQuery().Where(
+                TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.GreaterThan, "NLAG-CT-20190210"));
+            var pkeys = table.ExecuteQuerySegmentedAsync(rangeQueryPKey, null).Result;
+
         }
 
     }
