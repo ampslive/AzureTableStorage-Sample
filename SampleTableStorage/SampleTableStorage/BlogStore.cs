@@ -111,6 +111,12 @@ namespace SampleTableStorage
             TableQuery.GenerateFilterCondition("AG1", QueryComparisons.Equal, "Manjrekar")));
 
             var ag1Manjrekar = table.ExecuteQuerySegmentedAsync(queryPScan, null).Result;
+
+            //Table Scan
+            TableQuery queryTScan = new TableQuery().Where(
+            TableQuery.GenerateFilterCondition("AG1", QueryComparisons.Equal, "Manjrekar"));
+
+            var ag1ManjrekarTScan = table.ExecuteQuerySegmentedAsync(queryTScan, null).Result;
         }
 
     }
