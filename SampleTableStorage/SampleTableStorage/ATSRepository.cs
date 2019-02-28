@@ -1,5 +1,6 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -30,25 +31,57 @@ namespace SampleTableStorage
             PropertyInfo[] props = obj.GetType().GetProperties();
             foreach(var p in props)
             {
-                if(p.Name != nameof(RowKey) || p.Name != nameof(PartitionKey))
+                if(p.Name != nameof(RowKey) && p.Name != nameof(PartitionKey) && p.Name != nameof(ETag) && p.Name != nameof(Timestamp))
                 {
                     obj.GetType().GetProperty("RowKey").SetValue(obj, p.Name.ToString(), null);
 
                     //TODO: Create Object with PPartition, Row and Properties 
-                    Dictionary<string, EntityProperty> flattenedProperties = EntityPropertyConverter.Flatten(p.GetValue(obj), null);
                     string rowkey = obj.GetType().GetProperty("RowKey").GetValue(obj).ToString();
                     string partitionKey = obj.GetType().GetProperty("PartitionKey").GetValue(obj).ToString();
-                    var entity = new DynamicTableEntity(rowkey,partitionKey);
-                    entity.Properties = flattenedProperties;
 
-                    _tableOperation = TableOperation.InsertOrMerge((ITableEntity)entity);
-                    _cloudTable.ExecuteAsync(_tableOperation).Wait();
+
+                    if (p.PropertyType.Name.Contains("String"))
+                    {
+                        var entity = new DynamicTableEntity(partitionKey, rowkey);
+                        //entity.Properties = EntityPropertyConverter.Flatten(p.GetValue(obj), null);
+
+                        entity.Properties.Add("Value", new EntityProperty(p.GetValue(obj).ToString()));
+                        InsertIntoTable(entity);
+                    }
+                    else if (!p.PropertyType.Name.Contains("List"))
+                    {
+                        var entity = new DynamicTableEntity(partitionKey, rowkey);
+                        entity.Properties = EntityPropertyConverter.Flatten(p.GetValue(obj), null);
+
+                        InsertIntoTable(entity);
+                    }
+                    else
+                    {
+                        foreach (var f in (IEnumerable)p.GetValue(obj))
+                        {
+                            int i = 1;
+                            var entity = new DynamicTableEntity(partitionKey.ToUpper(), rowkey + EntityPropertyConverter.DefaultPropertyNameDelimiter + i++);
+                            entity.Properties = EntityPropertyConverter.Flatten(f, null);
+
+                            InsertIntoTable(entity);
+                        }
+                    }
+
+                    //_tableOperation = TableOperation.InsertOrMerge((ITableEntity)entity);
+                    //_cloudTable.ExecuteAsync(_tableOperation).Wait();
+                    
                 }
             }
 
             //Insert or Upsert
             //_tableOperation = TableOperation.InsertOrMerge((ITableEntity)obj);
             //_cloudTable.ExecuteAsync(_tableOperation).Wait();
+        }
+
+        private void InsertIntoTable(DynamicTableEntity entity)
+        {
+            _tableOperation = TableOperation.InsertOrMerge((ITableEntity)entity);
+            _cloudTable.ExecuteAsync(_tableOperation).Wait();
         }
 
         private static void SetPartitionRowKeys(T obj)
