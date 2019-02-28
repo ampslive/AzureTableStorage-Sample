@@ -19,6 +19,7 @@ namespace SampleTableStorage
             var obj = new OrganisationEntity("NLAG" + "_" + Guid.NewGuid());
             obj.Subscription = "Full";
             obj.Departments = new List<Department>();
+            obj.Departments.Add(new Department { Name = "Church", ShortName = "NLAG", IsActive = true });
             obj.Departments.Add(new Department { Name = "Youth Alive", ShortName = "YA", IsActive = true });
             obj.Details = new Organisation() { Name = "New Life Assembly", ShortName = "NLAG", WebsiteUri = "Website", LogoUri = "Logo" };
             ATSRepository<OrganisationEntity> ats = new OrganisationEntity("NLAG");

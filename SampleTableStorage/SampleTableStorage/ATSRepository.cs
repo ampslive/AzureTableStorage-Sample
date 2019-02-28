@@ -57,9 +57,9 @@ namespace SampleTableStorage
                     }
                     else
                     {
+                        int i = 1;
                         foreach (var f in (IEnumerable)p.GetValue(obj))
                         {
-                            int i = 1;
                             var entity = new DynamicTableEntity(partitionKey.ToUpper(), rowkey + EntityPropertyConverter.DefaultPropertyNameDelimiter + i++);
                             entity.Properties = EntityPropertyConverter.Flatten(f, null);
 
