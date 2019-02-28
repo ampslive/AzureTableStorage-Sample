@@ -16,8 +16,13 @@ namespace SampleTableStorage
             //obj.Add(blog);
             //obj.Get("");
 
-            ATSRepository<Services> obj = new Services();
-            obj.Get("");
+            var obj = new OrganisationEntity("NLAG");
+            obj.Departments = new List<Department>();
+            obj.Departments.Add(new Department { Name = "Youth Alive", ShortName = "YA", IsActive = true });
+            obj.Details = new Organisation() { Name = "New Life Assembly", ShortName = "NLAG", WebsiteUri = "Website", LogoUri = "Logo" };
+            ATSRepository<OrganisationEntity> ats = new OrganisationEntity("NLAG");
+            ats.Add(obj);
+           // obj.Get("");
         }
     }
 

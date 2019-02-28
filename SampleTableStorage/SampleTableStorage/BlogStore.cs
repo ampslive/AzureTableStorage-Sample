@@ -70,7 +70,7 @@ namespace SampleTableStorage
         {
             CloudTableClient tableClient = ProgramNew.storageAccount.CreateCloudTableClient();
             CloudTable table = tableClient.GetTableReference(this.GetType().Name);
-            
+
             // Point Query
             TableOperation retrieveServiceOperation = TableOperation.Retrieve<ServiceDetail>("NLAG-CT-20190224", "SERVICEDETAILS");
             var serviceDetails = table.ExecuteAsync(retrieveServiceOperation).Result;
@@ -93,7 +93,7 @@ namespace SampleTableStorage
                     var props = item.Properties;
 
                     RehearsalDetail rehearsal = EntityPropertyConverter.ConvertBack<RehearsalDetail>(item.Properties, null);
-                    
+
                 }
             };
 
@@ -121,6 +121,36 @@ namespace SampleTableStorage
 
     }
 
+    public class Organisation  
+    {
+        public string Name { get; set; }
+        public string ShortName { get; set; }
+        public string LogoUri { get; set; }
+        public string WebsiteUri { get; set; }
+    }
+
+    public class Subscription
+    {
+        public string SubscriptionType { get; set; }
+    }
+
+    public class Department
+    {
+        public string Name { get; set; }
+        public string ShortName { get; set; }
+        public bool IsActive { get; set; }
+    }
+
+    public class OrganisationEntity : ATSRepository<OrganisationEntity>
+    {
+        public OrganisationEntity(string partitionKey)
+        {
+            this.PartitionKey = partitionKey;
+        }
+        public Organisation Details { get; set; }
+        public string Subscription { get; set; }
+        public List<Department> Departments { get; set; }
+    }
 
 
     public class WorshipLeader : TableEntity
