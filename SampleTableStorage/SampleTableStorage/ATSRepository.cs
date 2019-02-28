@@ -26,11 +26,24 @@ namespace SampleTableStorage
             _cloudTable.CreateIfNotExistsAsync().Wait();
 
             //Obtain Partition Key and Row Key
-            SetPartitionRowKeys(obj);
+            //SetPartitionRowKeys(obj);
+            PropertyInfo[] props = obj.GetType().GetProperties();
+            foreach(var p in props)
+            {
+                if(p.Name != nameof(RowKey) || p.Name != nameof(PartitionKey))
+                {
+                    obj.GetType().GetProperty("RowKey").SetValue(obj, p.Name.ToString(), null);
+                   
+                    //TODO: Create Object with PPartition, Row and Properties 
+                    
+                    _tableOperation = TableOperation.InsertOrMerge((ITableEntity)obj);
+                    _cloudTable.ExecuteAsync(_tableOperation).Wait();
+                }
+            }
 
             //Insert or Upsert
-            _tableOperation = TableOperation.InsertOrMerge((ITableEntity)obj);
-            _cloudTable.ExecuteAsync(_tableOperation).Wait();
+            //_tableOperation = TableOperation.InsertOrMerge((ITableEntity)obj);
+            //_cloudTable.ExecuteAsync(_tableOperation).Wait();
         }
 
         private static void SetPartitionRowKeys(T obj)
