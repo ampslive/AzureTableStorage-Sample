@@ -33,10 +33,15 @@ namespace SampleTableStorage
                 if(p.Name != nameof(RowKey) || p.Name != nameof(PartitionKey))
                 {
                     obj.GetType().GetProperty("RowKey").SetValue(obj, p.Name.ToString(), null);
-                   
+
                     //TODO: Create Object with PPartition, Row and Properties 
-                    
-                    _tableOperation = TableOperation.InsertOrMerge((ITableEntity)obj);
+                    Dictionary<string, EntityProperty> flattenedProperties = EntityPropertyConverter.Flatten(p.GetValue(obj), null);
+                    string rowkey = obj.GetType().GetProperty("RowKey").GetValue(obj).ToString();
+                    string partitionKey = obj.GetType().GetProperty("PartitionKey").GetValue(obj).ToString();
+                    var entity = new DynamicTableEntity(rowkey,partitionKey);
+                    entity.Properties = flattenedProperties;
+
+                    _tableOperation = TableOperation.InsertOrMerge((ITableEntity)entity);
                     _cloudTable.ExecuteAsync(_tableOperation).Wait();
                 }
             }
